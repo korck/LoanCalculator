@@ -17,6 +17,8 @@ public class Loan {
 		for (int i = 0; i < this.noi; i++) {
 			Installment installment = new Installment();
 			installment.setId(i);
+			installment.setFixedfee(this.getFixedfee());
+			//installment.
 		}
 		
 		return list;
