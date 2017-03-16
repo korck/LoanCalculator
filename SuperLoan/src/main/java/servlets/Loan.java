@@ -9,18 +9,36 @@ public class Loan {
 	private double interest;
 	private double fixedfee;
 	private boolean decreasing = true;
-	private List<Installment> installments;
+	//private List<Installment> installments;
 	
 	public List<Installment> generateInstallments() {
 		List<Installment> list = new ArrayList<Installment>();
+		double interest, capital = this.amount / this.noi;
 		
 		for (int i = 0; i < this.noi; i++) {
 			Installment installment = new Installment();
-			installment.setId(i);
+			if (decreasing)
+				installment.setId(i);
+			else
+				installment.setId(this.noi - i);
+			
+			installment.setCapital(capital);
+			interest = 0;
+			for (int j = 0; j < i; j++)
+				interest += installment.getCapital();
+
 			installment.setFixedfee(this.getFixedfee());
-			//installment.
+			installment.setInterest(
+					(this.amount - interest)
+					*
+					(this.getInterest())
+					/ 12
+					);
+			installment.setTotal(
+					installment.getCapital() + installment.getInterest() + installment.getFixedfee()
+					);
+		list.add(installment);
 		}
-		
 		return list;
 	}
 	

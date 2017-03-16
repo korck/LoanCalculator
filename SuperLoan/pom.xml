@@ -37,5 +37,42 @@
   		<artifactId>javaee-web-api</artifactId>
   		<version>7.0</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.itextpdf</groupId>
+  		<artifactId>itextpdf</artifactId>
+  		<version>5.5.10</version>
+  	</dependency>
+  	  	<dependency>
+  		<groupId>com.itextpdf</groupId>
+  		<artifactId>itext-pdfa</artifactId>
+  		<version>5.5.10</version>
+  	</dependency>
+  	  	<dependency>
+  		<groupId>com.itextpdf</groupId>
+  		<artifactId>itext-xtra</artifactId>
+  		<version>5.5.10</version>
+  	</dependency>
+  	  	<dependency>
+  		<groupId>com.itextpdf.tool</groupId>
+  		<artifactId>xmlworker</artifactId>
+  		<version>5.5.10</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.itextpdf.tool</groupId>
+  		<artifactId>xfaworker</artifactId>
+  		<version>5.5.10</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.itextpdf.tool</groupId>
+  		<artifactId>itext-licensekey</artifactId>
+  		<version>1.0.4</version>
+  	</dependency>
   </dependencies>
+  <repositories>
+  	<repository>
+  		<id>iText Repository</id>
+  		<name>iText Repository-releases</name>
+  		<url>https://repo.itextsupport.com/releases</url>
+  	</repository>
+  </repositories>
 </project>
