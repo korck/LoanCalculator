@@ -36,7 +36,7 @@
 				Rosnąca: <input type="radio" name="type" value="inc" checked><br>
 		</span>
 		<br>
-		<input type="submit" value="Oblicz"/>
+		<input type="submit" name="oblicz" value="Oblicz"/> <input type="submit" name="genpdf" value="Wygeneruj PDF"/> 
 	</form>
 </body>
 </html>

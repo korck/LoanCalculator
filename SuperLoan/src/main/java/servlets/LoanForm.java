@@ -1,5 +1,6 @@
 package servlets;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -8,52 +9,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.itextpdf.text.Anchor;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Chapter;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Section;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
 @WebServlet("/loan")
 public class LoanForm extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	
-	public String generateTable(List<Installment> installments, boolean isDecrementing) {
-		String siteContent = "";
-		
-		siteContent = siteContent.concat("<table>"
-				+ "<tr>"
-				+ "<th>Nr raty</th>"
-				+ "<th>Kwota kapitalu</th>"
-				+ "<th>Kwota odsetek</th>"
-				+ "<th>Oplaty stale</th>"
-				+ "<th>Calkowita kwota raty</th>"
-				+ "</tr>"
-				);
-		String money = "%.2f";
-		int index;
-		for (int i = 0; i < installments.size(); i++) {
-			index = i;
-			if(!isDecrementing)
-				index = installments.size() - i - 1;
-			siteContent = siteContent.concat(
-				  "<tr>"
-				+ "<td>"+ (i + 1) +"</td>"
-				+ "<td>"+ String.format(money, installments.get(index).getCapital()) +" PLN</td>"
-				+ "<td>"+ String.format(money, installments.get(index).getInterest()) +" PLN</td>"
-				+ "<td>"+ String.format(money, installments.get(index).getFixedfee()) +" PLN</td>"
-				+ "<td>"+ String.format(money, installments.get(index).getTotal()) +" PLN</td>"
-				+ "</tr>"
-				);
-		}
-		siteContent = siteContent.concat("</table>");
-		
-		return siteContent;
-	}
-	/*
-	public void generatePDF() {
-		
-		try (final PDDocument document = new PDDocument()) {
-			final PDPage emptyPage = new PDPage();
-			document.addPage(emptyPage);
-		}
-		
-	}*/
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.getWriter().println("<h1>Harmonogram splaty kredytu</h1>");
@@ -77,9 +50,45 @@ public class LoanForm extends HttpServlet {
 					+ "W formularzu uzyto niewlasciwych znakow");
 			return;
 		}
+		
 		List<Installment> installments = loan.generateInstallments();
 		
-		response.getWriter().print(generateTable(installments, isDecrementing));
+		if (request.getParameter("submit").equals("pdfgen")) {
+			Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
+			Document document = new Document();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			try {
+				PdfWriter.getInstance(document, baos);
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			document.open();
+			
+			PdfPTable table = new PdfPTable(5);
+			Anchor anchor = new Anchor("", catFont);
+			Chapter catPart = new Chapter(new Paragraph(anchor), 1);
+			Section subCatPart = catPart.addSection("");
+			
+			String[] cellHeaders = {"Nr raty", "Kwota kapitalu", "Kwota odsetek", "Oplaty stale", "Calkowita kwota raty"};
+			
+			for (int i=0; i < 5; i++) {
+				PdfPCell cell = new PdfPCell(new Phrase(cellHeaders[i]));
+				cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				table.addCell(cell);
+			}
+			
+			table.setHeaderRows(1);
+			for (int i = 0; i < installments.size(); i++) {
+				table.addCell(Integer.toString(i+1));
+				table.addCell(Double.toString(installments.get(i).getCapital()));
+				table.addCell(Double.toString(installments.get(i).getInterest()));
+				table.addCell(Double.toString(installments.get(i).getFixedfee()));
+				table.addCell(Double.toString(installments.get(i).getTotal()));
+			}
+			subCatPart.add(table);
+		}
+		else response.getWriter().print(loan.generateTable(installments, isDecrementing));
 		
 	}
+
 }
