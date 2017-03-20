@@ -44,30 +44,53 @@ public class Loan {
 	
 	public List<Installment> generateInstallments() {
 		List<Installment> list = new ArrayList<Installment>();
-		double interest, capital = this.amount / this.noi;
 		
-		for (int i = 0; i < this.noi; i++) {
-			Installment installment = new Installment();
-			installment.setId(this.noi - i);
+		if (this.isDecreasing()) {
+			double interest, capital = this.amount / this.noi;
 			
-			installment.setCapital(capital);
-			interest = 0;
-			for (int j = 0; j < i; j++)
-				interest += installment.getCapital();
-
-			installment.setFixedfee(this.getFixedfee());
-			installment.setInterest(
-					(this.amount - interest)
-					*
-					(this.getInterest())
-					/ 12
-					);
-			installment.setTotal(
-					installment.getCapital() + installment.getInterest() + installment.getFixedfee()
-					);
-		list.add(installment);
+			for (int i = 0; i < this.noi; i++) {
+				Installment installment = new Installment();
+				installment.setId(this.noi - i);
+				
+				installment.setCapital(capital);
+				interest = 0;
+				for (int j = 0; j < i; j++)
+					interest += installment.getCapital();
+	
+				installment.setFixedfee(this.getFixedfee());
+				installment.setInterest(
+						(this.amount - interest)
+						*
+						(this.getInterest())
+						/ 12
+						);
+				installment.setTotal(
+						installment.getCapital() + installment.getInterest() + installment.getFixedfee()
+						);
+			list.add(installment);
+			}
+		} else {
+			double q = ((this.interest ) / 12) + 1;			
+			
+			for (int i = 0; i < this.noi; i++) {
+				Installment installment = new Installment();
+				installment.setId(this.noi - i);
+				installment.setFixedfee(Math.pow(q,this.noi));
+				
+				installment.setTotal((
+						this.amount * Math.pow(q,this.noi) * (q - 1)
+						/ 
+						((Math.pow(q, this.noi)) - 1)
+						)
+						);
+				installment.setCapital(this.getAmount()/this.noi);
+				//installment.setInterest(installment.getTotal() - installment.getCapital());
+				installment.setInterest(q);
+				list.add(installment);
+			}
 		}
 		return list;
+
 	}
 	
 	public Loan(double amount, int noi, double interest, double fixedfee,

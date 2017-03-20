@@ -4,13 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.itextpdf.text.Anchor;
-import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -29,8 +29,6 @@ public class LoanForm extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		response.getWriter().println("<h1>Harmonogram splaty kredytu</h1>");
-		
 		boolean isDecrementing;
 		if (request.getParameter("type").equals("dec"))
 			isDecrementing = true;
@@ -53,9 +51,10 @@ public class LoanForm extends HttpServlet {
 		
 		List<Installment> installments = loan.generateInstallments();
 		
-		if (request.getParameter("submit").equals("pdfgen")) {
+		if (request.getParameter("generate").equals("Wygeneruj PDF")) {
 			Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
 			Document document = new Document();
+			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			try {
 				PdfWriter.getInstance(document, baos);
@@ -78,17 +77,37 @@ public class LoanForm extends HttpServlet {
 			}
 			
 			table.setHeaderRows(1);
+			String money = "%.2f";
 			for (int i = 0; i < installments.size(); i++) {
 				table.addCell(Integer.toString(i+1));
-				table.addCell(Double.toString(installments.get(i).getCapital()));
-				table.addCell(Double.toString(installments.get(i).getInterest()));
-				table.addCell(Double.toString(installments.get(i).getFixedfee()));
-				table.addCell(Double.toString(installments.get(i).getTotal()));
+				table.addCell(String.format(money, Double.toString(installments.get(i).getCapital())));
+				table.addCell(String.format(money, Double.toString(installments.get(i).getInterest())));
+				table.addCell(String.format(money, Double.toString(installments.get(i).getFixedfee())));
+				table.addCell(String.format(money, Double.toString(installments.get(i).getTotal())));
 			}
 			subCatPart.add(table);
+			try {
+				document.add(subCatPart);
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			document.close();
+			
+			response.setHeader("Expires", "0");
+			response.setHeader("Cache-control", "must-revalidate, post-check=0, pre-check=0");
+			response.setHeader("Pragma", "public");
+			response.setContentType("aplication/pdf");
+			response.setContentLength(baos.size());
+			ServletOutputStream os = response.getOutputStream();
+			baos.writeTo(os);
+			os.flush();
+			os.close();
 		}
-		else response.getWriter().print(loan.generateTable(installments, isDecrementing));
 		
+		else {
+			response.getWriter().println("<h1>Harmonogram splaty kredytu</h1>");
+			response.getWriter().print(loan.generateTable(installments, isDecrementing));
+		}
 	}
 
 }

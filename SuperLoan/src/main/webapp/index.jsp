@@ -33,10 +33,10 @@
 		<span id="type">
 			<br>Rodzaj rat:<br>
 				Malejąca: <input type="radio" name="type" value="dec" checked><br>
-				Rosnąca: <input type="radio" name="type" value="inc" checked><br>
+				Stała: <input type="radio" name="type" value="inc" checked><br>
 		</span>
 		<br>
-		<input type="submit" name="oblicz" value="Oblicz"/> <input type="submit" name="genpdf" value="Wygeneruj PDF"/> 
+		<input type="submit" name="generate" value="Oblicz"/> <input type="submit" name="generate" value="Wygeneruj PDF"/> 
 	</form>
 </body>
 </html>
