@@ -80,10 +80,10 @@ public class LoanForm extends HttpServlet {
 			String money = "%.2f";
 			for (int i = 0; i < installments.size(); i++) {
 				table.addCell(Integer.toString(i+1));
-				table.addCell(String.format(money, Double.toString(installments.get(i).getCapital())));
-				table.addCell(String.format(money, Double.toString(installments.get(i).getInterest())));
-				table.addCell(String.format(money, Double.toString(installments.get(i).getFixedfee())));
-				table.addCell(String.format(money, Double.toString(installments.get(i).getTotal())));
+				table.addCell(String.format(money, installments.get(i).getCapital()));
+				table.addCell(String.format(money, installments.get(i).getInterest()));
+				table.addCell(String.format(money, installments.get(i).getFixedfee()));
+				table.addCell(String.format(money, installments.get(i).getTotal()));
 			}
 			subCatPart.add(table);
 			try {

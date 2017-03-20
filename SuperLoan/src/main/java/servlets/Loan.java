@@ -75,17 +75,16 @@ public class Loan {
 			for (int i = 0; i < this.noi; i++) {
 				Installment installment = new Installment();
 				installment.setId(this.noi - i);
-				installment.setFixedfee(Math.pow(q,this.noi));
+				installment.setFixedfee(this.getFixedfee());
 				
 				installment.setTotal((
 						this.amount * Math.pow(q,this.noi) * (q - 1)
 						/ 
 						((Math.pow(q, this.noi)) - 1)
-						)
+						) + this.getFixedfee()
 						);
 				installment.setCapital(this.getAmount()/this.noi);
-				//installment.setInterest(installment.getTotal() - installment.getCapital());
-				installment.setInterest(q);
+				installment.setInterest(installment.getTotal() - installment.getCapital());
 				list.add(installment);
 			}
 		}
